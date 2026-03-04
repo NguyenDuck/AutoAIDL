@@ -3,22 +3,36 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'io.vn.nguyenduck'
-version = '1.0.0'
+group = "io.github.nguyenduck"
+version = "1.0.6"
 
 repositories {
     mavenCentral()
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-            groupId = project.group
-            artifactId = "autoaidl"
-            version = project.version
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+
+    implementation "com.github.javaparser:javaparser-core:3.25.8"
+}
+
+gradlePlugin {
+    plugins {
+        autoAidl {
+            id = "io.github.nguyenduck.autoaidl"
+            implementationClass = "io.github.nguyenduck.AutoAidlPlugin"
         }
     }
+}
+
+publishing {
+    publications {
+        pluginMaven(MavenPublication) {
+            artifactId = "autoaidl"
+        }
+    }
+
     repositories {
         maven {
             name = "GithubPackages"

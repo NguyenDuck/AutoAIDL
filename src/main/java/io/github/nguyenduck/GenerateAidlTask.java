@@ -1,4 +1,4 @@
-package io.vn.nguyenduck;
+package io.github.nguyenduck;
 
 import com.github.javaparser.*;
 import com.github.javaparser.ast.*;
