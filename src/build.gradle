@@ -1,0 +1,19 @@
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+
+    implementation "com.github.javaparser:javaparser-core:3.25.8"
+}
+
+gradlePlugin {
+    plugins {
+        autoAidl {
+            id = "io.vn.nguyenduck.autoaidl"
+            implementationClass = "io.vn.nguyenduck.autoaidl.AutoAidlPlugin"
+        }
+    }
+}
