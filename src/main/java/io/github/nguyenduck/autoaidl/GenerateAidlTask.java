@@ -1,8 +1,9 @@
-package io.github.nguyenduck;
+package io.github.nguyenduck.autoaidl;
 
 import com.github.javaparser.*;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 
@@ -11,24 +12,30 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.zip.CRC32;
 
+import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.tasks.*;
+
 public abstract class GenerateAidlTask extends DefaultTask {
+
+    @InputDirectory
+    public abstract DirectoryProperty getSourceDir();
+
+    @OutputDirectory
+    public abstract DirectoryProperty getOutputDir();
 
     @TaskAction
     public void generate() throws Exception {
 
-        File src = new File(getProject()
-                .getProjectDir(),
-                "src/main/java");
-
-        File aidlDir = new File(getProject()
-                .getProjectDir(),
-                "src/main/aidl");
+        File src = getSourceDir().get().getAsFile();
+        File aidlDir = getOutputDir().get().getAsFile();
 
         JavaParser parser = new JavaParser();
 
         Files.walk(src.toPath())
                 .filter(p -> p.toString().endsWith(".java"))
                 .forEach(path -> processFile(parser, path, aidlDir));
+
+
     }
 
     private void processFile(JavaParser parser,
@@ -46,7 +53,8 @@ public abstract class GenerateAidlTask extends DefaultTask {
                     .stream()
                     .filter(ClassOrInterfaceDeclaration::isInterface)
                     .filter(i -> i.getAnnotationByName("AIDLInterface").isPresent()
-                            || i.getAnnotationByName("ShizukuInterface").isPresent())
+                            || i.getAnnotationByName("ShizukuInterface").isPresent()
+                            || i.getAnnotationByName("AutoAIDL").isPresent())
                     .forEach(i -> {
                         try {
                             generateAidl(i, cu, aidlDir);
@@ -65,7 +73,7 @@ public abstract class GenerateAidlTask extends DefaultTask {
                               File aidlDir) throws Exception {
 
         String pkg = cu.getPackageDeclaration()
-                .map(p -> p.getNameAsString())
+                .map(NodeWithName::getNameAsString)
                 .orElse("");
 
         String name = iface.getNameAsString();
@@ -77,7 +85,14 @@ public abstract class GenerateAidlTask extends DefaultTask {
 
             int id;
 
-            if (m.getAnnotationByName("AIDLMethod").isPresent()) {
+            if (m.getAnnotationByName("MethodId").isPresent()) {
+                id = Integer.parseInt(
+                        m.getAnnotationByName("MethodId")
+                                .get()
+                                .asSingleMemberAnnotationExpr()
+                                .getMemberValue()
+                                .toString());
+            } else if (m.getAnnotationByName("AIDLMethod").isPresent()) {
                 id = Integer.parseInt(
                         m.getAnnotationByName("AIDLMethod")
                                 .get()
