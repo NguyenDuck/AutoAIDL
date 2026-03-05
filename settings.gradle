@@ -1,1 +1,2 @@
 rootProject.name = "autoaidl"
+include(":autoaidl")

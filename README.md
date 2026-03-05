@@ -19,7 +19,7 @@ In your module's `build.gradle` (usually `app/build.gradle` or `library/build.gr
 ```gradle
 plugins {
     id 'com.android.application' // or 'com.android.library'
-    id 'io.github.nguyenduck.autoaidl' version '1.1.0'
+    id 'io.github.nguyenduck.autoaidl' version '1.2.0'
 }
 
 repositories {
@@ -64,9 +64,9 @@ The Android Gradle Plugin (AGP) will compile the generated AIDL into a Java clas
 ```java
 package com.example.service;
 
-import com.example.service.IMyRemoteService;
+import com.example.service.IMyRemoteServiceAIDL;
 
-public class MyServiceImpl extends IMyRemoteService.Stub {
+public class MyServiceImpl extends IMyRemoteServiceAIDL.Stub {
     
     @Override
     public void basicOperation(String taskName) {

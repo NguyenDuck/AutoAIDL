@@ -1,0 +1,37 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+group = "io.github.nguyenduck"
+version = "1.2.0"
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes(
+                "Implementation-Version": project.version
+        )
+    }
+}
+
+gradlePlugin {
+    plugins {
+        autoAidl {
+            id = "io.github.nguyenduck.autoaidl"
+            implementationClass = "io.github.nguyenduck.autoaidl.AutoAIDLPlugin"
+        }
+    }
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+
+    implementation "com.github.javaparser:javaparser-core:3.25.8"
+
+    compileOnly "com.android.tools.build:gradle:8.0.0"
+}

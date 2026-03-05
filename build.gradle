@@ -3,30 +3,9 @@ plugins {
     id 'maven-publish'
 }
 
-group = "io.github.nguyenduck"
-version = "1.1.0"
-
 repositories {
     google()
     mavenCentral()
-}
-
-dependencies {
-    implementation gradleApi()
-    implementation localGroovy()
-
-    implementation "com.github.javaparser:javaparser-core:3.25.8"
-
-    compileOnly "com.android.tools.build:gradle:8.0.0"
-}
-
-gradlePlugin {
-    plugins {
-        autoAidl {
-            id = "io.github.nguyenduck.autoaidl"
-            implementationClass = "io.github.nguyenduck.autoaidl.AutoAIDLPlugin"
-        }
-    }
 }
 
 publishing {

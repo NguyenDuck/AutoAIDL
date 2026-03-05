@@ -3,14 +3,20 @@ package io.github.nguyenduck.autoaidl;
 import com.android.build.api.variant.AndroidComponentsExtension;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.TaskProvider;
 
 import java.io.File;
-import java.util.Objects;
 
 public class AutoAIDLPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
+        String version = AutoAIDLPlugin.class
+                .getPackage()
+                .getImplementationVersion();
+
+        // Auto add annotation dependency
+        project.getDependencies().add("compileOnly", "io.github.nguyenduck:autoaidl:" + version);
 
         project.getPlugins().withId("com.android.application", plugin ->
                 configureAndroid(project));
@@ -30,11 +36,11 @@ public class AutoAIDLPlugin implements Plugin<Project> {
             String taskName = "generate" + capitalize(variant.getName()) + "AutoAidl";
 
             File generatedDir = new File(
-                    project.getBuildFile(),
+                    project.getLayout().getBuildDirectory().getAsFile().get(),
                     "generated/aidl/" + variant.getName()
             );
 
-            org.gradle.api.tasks.TaskProvider<GenerateAidlTask> taskProvider =
+            TaskProvider<GenerateAidlTask> taskProvider =
                     project.getTasks().register(taskName, GenerateAidlTask.class, task -> {
                         task.setGroup("build");
                         task.getSourceDir().set(new File(project.getProjectDir(), "src/main/java"));
@@ -42,8 +48,8 @@ public class AutoAIDLPlugin implements Plugin<Project> {
                     });
 
             // Inject AIDL source folder
-            Objects.requireNonNull(variant.getSources()
-                            .getAidl())
+            variant.getSources()
+                    .getAidl()
                     .addGeneratedSourceDirectory(
                             taskProvider,
                             GenerateAidlTask::getOutputDir
