@@ -1,22 +1,13 @@
 plugins {
-    id 'java-gradle-plugin'
-    id 'maven-publish'
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
     google()
     mavenCentral()
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GithubPackages"
-            url = uri("https://maven.pkg.github.com/NguyenDuck/AutoAIDL")
-            credentials {
-                username = project.findProperty("gpr.user")
-                password = project.findProperty("gpr.key")
-            }
-        }
-    }
 }
